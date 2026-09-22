@@ -1,0 +1,17 @@
+# Environment & Secrets
+.env
+.env.local
+
+# Database temporary logs & mail logs
+database/mail_log.txt
+*.log
+
+# IDE & OS Caches
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary / Scratch files
+scratch/
+*.tmp
