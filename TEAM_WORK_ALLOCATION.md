@@ -41,7 +41,7 @@ cd C:\Users\mohds\.gemini\antigravity-ide\scratch\msec-smart-stock
 
 ## 👥 2. Junior / Colleague Work Delegation Packages
 
-As Team Leader, you can allocate the 10 locked modules to your team members across these 5 structured work packages:
+you can allocate the 10 locked modules to your team members across these 5 structured work packages:
 
 ---
 
