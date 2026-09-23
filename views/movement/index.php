@@ -110,6 +110,7 @@ $items = Inventory::getAllItems();
     </div>
 </div>
 
+<?php if (Auth::can('create_transfer')): ?>
 <!-- Modal: New Inter-Department Transfer (Section 13) -->
 <div id="newTransferModal" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
     <div style="background: white; border-radius: 12px; width: 550px; max-width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
@@ -133,30 +134,32 @@ $items = Inventory::getAllItems();
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                 <div class="form-group">
-                    <label class="form-label">Source Department (Releasing)</label>
-                    <select name="source_dept_id" class="form-control" required>
-                        <option value="1" selected>CSE - Computer Science (Has Surplus)</option>
-                        <option value="2">ECE - Electronics & Comm</option>
-                        <option value="3">EEE - Electrical & Electronics</option>
+                    <label class="form-label">Source Department</label>
+                    <select name="source_dept_id" class="form-control">
+                        <option value="1">Computer Science (CSE)</option>
+                        <option value="2">Electronics (ECE)</option>
+                        <option value="3">Electrical (EEE)</option>
+                        <option value="4">Mechanical (MECH)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Target Department (Receiving)</label>
-                    <select name="target_dept_id" class="form-control" required>
-                        <option value="2" selected>ECE - Electronics & Comm (Needs Stock)</option>
-                        <option value="1">CSE - Computer Science</option>
-                        <option value="3">EEE - Electrical & Electronics</option>
+                    <label class="form-label">Destination Department</label>
+                    <select name="target_dept_id" class="form-control">
+                        <option value="2">Electronics (ECE)</option>
+                        <option value="1">Computer Science (CSE)</option>
+                        <option value="3">Electrical (EEE)</option>
+                        <option value="4">Mechanical (MECH)</option>
                     </select>
                 </div>
             </div>
 
-            <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px;">
-                <h4 style="font-size: 13.5px; font-weight: 700; margin-bottom: 8px;">Transfer Item & Quantity:</h4>
+            <div class="form-group">
+                <label class="form-label">Item to Transfer & Quantity</label>
                 <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 10px;">
                     <select name="items[0][item_id]" class="form-control" required>
                         <?php foreach ($items as $it): ?>
-                            <option value="<?= $it['id'] ?>" <?= $it['item_code'] === 'IT-KEY-002' ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($it['item_name']) ?> (Dell USB Keyboards)
+                            <option value="<?= $it['id'] ?>" <?= $it['item_name'] === 'Logitech USB Keyboard (Standard)' ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($it['item_name']) ?> (<?= htmlspecialchars($it['item_code']) ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -176,3 +179,4 @@ $items = Inventory::getAllItems();
         </form>
     </div>
 </div>
+<?php endif; ?>

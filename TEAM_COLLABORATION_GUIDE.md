@@ -64,7 +64,7 @@ git commit -m "Initial baseline: MSEC Smart Stock with RBAC and Responsive Desig
 # 3. Create a Private Repository on GitHub (e.g., msec-smart-stock)
 # 4. Link and push to main branch
 git branch -M main
-git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/msec-smart-stock.git
+git remote add origin https://github.com/tech-shakil/msec-smart-stock.git
 git push -u origin main
 ```
 
@@ -74,7 +74,7 @@ git push -u origin main
 Person 1 opens terminal/command prompt on their computer:
 ```bash
 # 1. Clone repository
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/msec-smart-stock.git
+git clone https://github.com/tech-shakil/msec-smart-stock.git
 cd msec-smart-stock
 
 # 2. Create and switch to their own isolated feature branch
@@ -93,7 +93,7 @@ run.bat
 Person 2 opens terminal/command prompt on their computer:
 ```bash
 # 1. Clone repository
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/msec-smart-stock.git
+git clone https://github.com/tech-shakil/msec-smart-stock.git
 cd msec-smart-stock
 
 # 2. Create and switch to their own isolated feature branch
@@ -116,17 +116,21 @@ run.bat
   - [`models/Asset.php`](file:///c:/Users/mohds/.gemini/antigravity-ide/scratch/msec-smart-stock/models/Asset.php)
   - [`views/assets/index.php`](file:///c:/Users/mohds/.gemini/antigravity-ide/scratch/msec-smart-stock/views/assets/index.php)
 
-### Deliverables & Tasks for Person 1:
-1. **Asset Registration Modal Enhancement:**
-   - Ensure the modal captures technical hardware specs: Serial Number, MAC Address, IP Address, Processor (CPU), RAM, SSD/HDD, Operating System, Purchase Date, Cost, and AMC details.
-2. **Status Management & Filter Tabs:**
-   - Test filtering by status pills: `Available`, `In Use`, `Under Repair`, `Condemned`.
-3. **Equipment Fault & Repair Reporting:**
-   - Test reporting damage on an asset which changes status to `Under Repair` and logs maintenance notes.
+### 🔑 Roles & Rights for Asset Management:
+| Role / Persona | Permitted Rights | What to Show in UI | What to HIDE (Off-Limits) |
+|:---|:---|:---|:---|
+| **Central Storekeeper** (`storekeeper`) & **Dept Coordinator** (`coord_cse`) | `create_asset`<br>`report_damage` | • **"+ Register New Asset"** header button & registration modal<br>• Full Asset catalog with MAC, IP, AMC<br>• **"Log Issue"** maintenance button | None (Full section access) |
+| **Lab In-Charge** (`lab_ai`) & **Technician / Faculty** (`lab_mech`) | `report_damage` | • Asset catalog for their lab/department<br>• **"Log Issue"** fault reporting button & modal | ❌ **HIDE** "+ Register New Asset" button & registration modal |
+| **Principal / Director / Auditor / Management** (`principal`, `director`, `auditor`) | Read-Only Governance | • Asset catalog, search filter by serial/MAC/IP<br>• Warranty/AMC status badges | ❌ **HIDE** "+ Register New Asset" button<br>❌ **HIDE** "Log Issue" action buttons (display "View Only" badge instead) |
+
+### 🎯 "Only Show What is Necessary" Rules for Person 1:
+1. **Guard Creation:** Wrap "+ Register New Asset" button and `newAssetModal` inside `<?php if (Auth::can('create_asset')): ?> ... <?php endif; ?>`.
+2. **Guard Issue Logging:** Wrap "Log Issue" action button and `serviceModal` inside `<?php if (Auth::can('report_damage')): ?> ... <?php endif; ?>`.
+3. **Clean Display for Reviewers:** When an auditor or principal logs in, they only see clean data tables and status pills without any mutation buttons.
 4. **How Person 1 Submits Their Work:**
    ```bash
    git add models/Asset.php views/assets/index.php
-   git commit -m "feat(assets): completed IT asset tracking and maintenance logging"
+   git commit -m "feat(assets): enforce RBAC visibility and IT hardware spec register"
    git push origin feature/asset-management
    ```
    *Then Person 1 creates a **Pull Request (PR)** on GitHub targeting the `main` branch.*
@@ -141,17 +145,21 @@ run.bat
   - [`models/Movement.php`](file:///c:/Users/mohds/.gemini/antigravity-ide/scratch/msec-smart-stock/models/Movement.php)
   - [`views/movement/index.php`](file:///c:/Users/mohds/.gemini/antigravity-ide/scratch/msec-smart-stock/views/movement/index.php)
 
-### Deliverables & Tasks for Person 2:
-1. **CSE &rarr; ECE 5 Keyboards Transfer Scenario (Section 13):**
-   - Verify the full lifecycle: `Submitted` &rarr; `Approved` &rarr; `Dispatched` &rarr; `In Transit` &rarr; `Acknowledged`.
-2. **Stock Balance Synchronization:**
-   - Confirm that when the receiving department acknowledges the transfer, the source department's balance decreases and receiving department's balance increases.
-3. **Transfer Initiation Modal:**
-   - Verify selecting source department, destination department, items, and quantity.
+### 🔑 Roles & Rights for Stock Movement & Transfers:
+| Role / Persona | Permitted Rights | What to Show in UI | What to HIDE (Off-Limits) |
+|:---|:---|:---|:---|
+| **Dept Coordinator / Lab In-Charge / HOD** (`coord_cse`, `lab_ai`, `hod_cse`) | `create_transfer`<br>`advance_transfer` | • **"+ Initiate Inter-Dept Transfer"** button & modal<br>• Department movement register<br>• Releasing approval & receiving acknowledgment buttons | ❌ Central store internal movement controls |
+| **Central Storekeeper** (`storekeeper`) | `create_transfer`<br>`advance_transfer` | • Full institutional transfer register<br>• Central Store &rarr; Dept transfers<br>• **"Dispatch"** transit progression buttons | None |
+| **Principal / Director / Auditor** (`principal`, `director`, `auditor`) | Read-Only Audit & Traceability | • Complete movement audit register<br>• Transit lifecycle timeline (Submitted &rarr; Approved &rarr; Dispatched &rarr; In Transit &rarr; Acknowledged)<br>• Transfer justification notes | ❌ **HIDE** "+ Initiate Inter-Dept Transfer" button<br>❌ **HIDE** Action links (`Approve`, `Dispatch`, `Acknowledge`) — display status badges only |
+
+### 🎯 "Only Show What is Necessary" Rules for Person 2:
+1. **Guard Initiation:** Wrap "+ Initiate Inter-Dept Transfer" button and `newTransferModal` inside `<?php if (Auth::can('create_transfer')): ?> ... <?php endif; ?>`.
+2. **Guard Status Progression:** Wrap lifecycle action links (`Approve`, `Dispatch`, `Acknowledge & Close`) inside `<?php if (Auth::can('advance_transfer')): ?> ... <?php endif; ?>`. For viewers, show only informational badges (`Awaiting Approval`, `In Transit`, `Completed`).
+3. **Stock Balance Synchronization:** When status reaches `Acknowledged`, ensure source department stock decreases and destination department stock increases automatically.
 4. **How Person 2 Submits Their Work:**
    ```bash
    git add models/Movement.php views/movement/index.php
-   git commit -m "feat(movement): completed inter-department transfer workflow"
+   git commit -m "feat(movement): enforce RBAC transfer lifecycle and stock balance sync"
    git push origin feature/stock-movement
    ```
    *Then Person 2 creates a **Pull Request (PR)** on GitHub targeting the `main` branch.*
@@ -200,24 +208,43 @@ When Person 1 and Person 2 submit their Pull Requests on GitHub:
 You can copy and send this exact message to your 2 colleagues on WhatsApp / Email:
 
 ```text
-Hi Team! Here is our project setup for MSEC SMART STOCK:
+Hi Team! Here is our project setup, work allocation, and roles & rights specification for MSEC SMART STOCK:
 
 1. Clone Repo:
-   git clone https://github.com/<YOUR_GITHUB_USERNAME>/msec-smart-stock.git
+   git clone https://github.com/tech-shakil/msec-smart-stock.git
    cd msec-smart-stock
 
-2. Run Locally (Zero configuration! No MySQL required):
+2. Run Locally (Zero configuration! SQLite is pre-seeded):
    Double-click run.bat (or run: php -S localhost:8000 -t public)
    Open browser at: http://localhost:8000
+   (Use the "🎭 Demo Role" switcher at top-right to test any role instantly)
 
-3. Work Allocation:
-   - Colleague 1: Checkout branch 'feature/asset-management'. Work ONLY on models/Asset.php and views/assets/index.php.
-   - Colleague 2: Checkout branch 'feature/stock-movement'. Work ONLY on models/Movement.php and views/movement/index.php.
-   - Lead (Muhammad) will handle core, routing, database, and remaining modules.
+3. Work Allocation, Assigned Roles & Rights:
+
+   ► COLLEAGUE 1 (IT Asset Tracking & Maintenance):
+     • Branch: git checkout -b feature/asset-management
+     • Files to touch: ONLY models/Asset.php and views/assets/index.php
+     • Roles & Rights for your section:
+       - Store Keeper (storekeeper) & Dept Coordinator (coord_cse): Full rights (can register new assets with + Register button, report damage, view all specs).
+       - Lab In-Charge (lab_ai) & Faculty/Tech (lab_mech): Can view lab assets and report damaged equipment with "Log Issue" button.
+       - Principal / Director / Auditor (principal, auditor): Read-only view (CANNOT see register or report buttons, only data table and "View Only" badge).
+     • Rule: Only show what is necessary! Wrap buttons and modals with if (Auth::can('create_asset')) and if (Auth::can('report_damage')).
+
+   ► COLLEAGUE 2 (Stock Movement & Inter-Dept Transfers):
+     • Branch: git checkout -b feature/stock-movement
+     • Files to touch: ONLY models/Movement.php and views/movement/index.php
+     • Roles & Rights for your section:
+       - Dept Coordinator (coord_cse) & Lab In-Charge (lab_ai) & HOD (hod_cse): Can initiate transfer (+ Initiate Transfer button) and advance their stage.
+       - Central Storekeeper (storekeeper): Can initiate, dispatch, and monitor all campus transfers.
+       - Principal / Director / Auditor (principal, auditor): Read-only audit trail (CANNOT see initiate or action buttons; show only status badges).
+     • Rule: Only show what is necessary! Wrap "+ Initiate Transfer" and action links with if (Auth::can('create_transfer')) and if (Auth::can('advance_transfer')).
+
+   ► LEAD (Muhammad Shakil):
+     • Handles core, routing, database, security, and remaining modules.
 
 4. UI Guideline:
-   Use the existing CSS classes (.card, .btn-primary, .data-table, .form-control) from public/css/style.css so all pages look identical and mobile-responsive.
+   Use existing CSS classes (.card, .btn-primary, .btn-secondary, .data-table, .form-control, .badge) from public/css/style.css so all pages remain 100% unified and mobile-responsive.
 
 5. When done:
-   Push to your branch and create a Pull Request on GitHub. Do not push directly to main.
+   Push to your feature branch and create a Pull Request on GitHub. Do NOT push directly to main.
 ```

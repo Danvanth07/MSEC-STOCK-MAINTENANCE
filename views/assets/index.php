@@ -97,7 +97,11 @@ $assets = Asset::getAll(null, $statusFilter);
                             </td>
                             <td><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($ast['asset_status']) ?></span></td>
                             <td>
-                                <button onclick="openServiceModal(<?= $ast['id'] ?>, '<?= htmlspecialchars(addslashes($ast['asset_name'])) ?>', '<?= htmlspecialchars($ast['asset_id']) ?>')" class="btn btn-secondary btn-sm">Log Issue</button>
+                                <?php if (Auth::can('report_damage')): ?>
+                                    <button onclick="openServiceModal(<?= $ast['id'] ?>, '<?= htmlspecialchars(addslashes($ast['asset_name'])) ?>', '<?= htmlspecialchars($ast['asset_id']) ?>')" class="btn btn-secondary btn-sm">Log Issue</button>
+                                <?php else: ?>
+                                    <span class="badge badge-neutral" style="font-size: 11px;">View Only</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -107,6 +111,7 @@ $assets = Asset::getAll(null, $statusFilter);
     </div>
 </div>
 
+<?php if (Auth::can('create_asset')): ?>
 <!-- Modal: Register Asset (Section 18.1) -->
 <div id="newAssetModal" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
     <div style="background: white; border-radius: 12px; width: 680px; max-width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);">
@@ -140,29 +145,42 @@ $assets = Asset::getAll(null, $statusFilter);
                     <input type="text" name="brand" class="form-control" placeholder="Dell / Cisco / HP" value="Dell">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Model</label>
-                    <input type="text" name="model" class="form-control" placeholder="OptiPlex 7090" value="OptiPlex 7090">
+                    <label class="form-label">Model / Part No.</label>
+                    <input type="text" name="model" class="form-control" placeholder="OptiPlex 7090">
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
-                <div class="form-group">
-                    <label class="form-label">Serial Number</label>
-                    <input type="text" name="serial_number" class="form-control" placeholder="SN-DELL-..." required value="SN-DELL-<?= rand(100000, 999999) ?>">
+            <!-- IT Spec Tagging (Section 8) -->
+            <div style="background: #f1f5f9; padding: 14px; border-radius: 8px; margin-bottom: 16px;">
+                <div style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px;">Hardware & Network Identifiers (Section 8 Spec)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label class="form-label" style="font-size: 11px;">Serial Number</label>
+                        <input type="text" name="serial_number" class="form-control" placeholder="e.g. SN-88392-DL">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px;">MAC Address</label>
+                        <input type="text" name="mac_address" class="form-control" placeholder="e.g. 00:1A:2B:3C:4D:5E">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px;">Static IP Address</label>
+                        <input type="text" name="ip_address" class="form-control" placeholder="e.g. 192.168.10.45">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">MAC Address (Section 8)</label>
-                    <input type="text" name="mac_address" class="form-control" placeholder="00:1A:2B:3C:4D:..." value="00:1A:2B:3C:<?= rand(10,99) ?>:<?= rand(10,99) ?>">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px;">
+                    <div>
+                        <label class="form-label" style="font-size: 11px;">Processor (CPU)</label>
+                        <input type="text" name="cpu_specs" class="form-control" placeholder="Intel Core i7-11700">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px;">RAM & Storage</label>
+                        <input type="text" name="ram_specs" class="form-control" placeholder="16GB DDR4 / 512GB NVMe SSD">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px;">OS Installed</label>
+                        <input type="text" name="os_installed" class="form-control" placeholder="Ubuntu 22.04 LTS / Win 11 Pro">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">IP Address (Section 8)</label>
-                    <input type="text" name="ip_address" class="form-control" placeholder="192.168.10.x" value="192.168.10.<?= rand(110, 240) ?>">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Hardware Configuration Details</label>
-                <input type="text" name="configuration" class="form-control" placeholder="Intel Core i7 11th Gen, 16GB RAM, 512GB NVMe SSD" value="Intel Core i7 11th Gen, 16GB RAM, 512GB NVMe SSD">
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
@@ -208,7 +226,9 @@ $assets = Asset::getAll(null, $statusFilter);
         </form>
     </div>
 </div>
+<?php endif; ?>
 
+<?php if (Auth::can('report_damage')): ?>
 <!-- Modal: Log Maintenance / Damage (Section 20) -->
 <div id="serviceModal" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
     <div style="background: white; border-radius: 12px; width: 450px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow: hidden;">
@@ -249,3 +269,4 @@ function openServiceModal(id, name, tag) {
     openModal('serviceModal');
 }
 </script>
+<?php endif; ?>
