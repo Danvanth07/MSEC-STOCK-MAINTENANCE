@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSEC SMART STOCK — Master Implementation Plan (Hard Copy Reference)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+        }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 13.5px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .top-action-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-print {
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+        .btn-print:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        .btn-back {
+            background: rgba(255,255,255,0.15);
+            color: #ffffff;
+        }
+        .btn-back:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .doc-wrapper {
+            max-width: 960px;
+            margin: 28px auto 60px;
+            padding: 0 16px;
+        }
+        .doc-paper {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            padding: 44px 50px;
+        }
+        .letterhead img {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 12px;
+        }
+        h1 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 6px 0;
+            line-height: 1.3;
+        }
+        h2 {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin: 32px 0 14px 0;
+        }
+        h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #334155;
+            margin: 20px 0 8px 0;
+        }
+        p {
+            margin: 0 0 12px 0;
+            color: #334155;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 24px 0;
+        }
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            margin: 16px 0 24px 0;
+        }
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            border: 1px solid #cbd5e1;
+        }
+        .doc-table th {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+            padding: 9px 12px;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        .doc-table td {
+            padding: 9px 12px;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: top;
+        }
+        .doc-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+        .code-block {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-x: auto;
+            margin: 14px 0 20px 0;
+            border: 1px solid #334155;
+        }
+        code {
+            font-family: "JetBrains Mono", monospace;
+            background: #f1f5f9;
+            color: #1e40af;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .code-block code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            border: none;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 12.5px;
+            border-left: 4px solid;
+        }
+        .alert-important {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #1e3a8a;
+        }
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        ul, ol {
+            margin: 0 0 14px 0;
+            padding-left: 22px;
+            color: #334155;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        @media print {
+            body {
+                background: #ffffff !important;
+                font-size: 11pt !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .doc-wrapper {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .doc-paper {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+            }
+            h2 {
+                page-break-after: avoid;
+            }
+            .table-wrap, .code-block {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-action-bar no-print">
+    <div style="display:flex; align-items:center; gap:14px;">
+        <a href="index.php?route=dashboard" class="btn btn-back">&larr; Portal Dashboard</a>
+        <span style="font-weight:700; font-size:14px; letter-spacing:0.5px;">MSEC SMART STOCK — MASTER IMPLEMENTATION PLAN</span>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button onclick="window.print()" class="btn btn-print">🖨️ Save as PDF / Print Hard Copy</button>
+    </div>
+</div>
+
+<div class="doc-wrapper">
+    <div class="doc-paper">
+        <div class="letterhead">
+            <img src="images/msec_letterhead.png" alt="Mohamed Sathak Engineering College (Autonomous)">
+        </div>
+
+        <h1>MSEC SMART STOCK — Master Implementation Plan &amp; Execution Blueprint</h1>
+<h3>Smart Inventory, Asset, Procurement &amp; Distribution Management System</h3>
+<strong>Mohamed Sathak Engineering College (Autonomous), Kilakarai – 623 806</strong>  
+<em>(Approved by AICTE, New Delhi | Affiliated to Anna University, Chennai | NAAC &amp; NBA Accredited | ISO 9001:2015 Certified)</em>
+
+<hr>
+
+<pre class="code-block"><code>========================================================================================
+DOCUMENT METADATA &amp; REVISION CONTROL
+========================================================================================
+Project Title:        MSEC SMART STOCK PORTAL
+Document Reference:   MSEC-ENG-SSP-2026-IMP-V2.0
+Document Purpose:     Comprehensive Master Blueprint, Implementation Plan &amp; Hard Copy Guide
+Author / Lead:        Engr. Muhammad Shakil (System Architect &amp; Project Team Lead)
+Target Audience:      Project Team, System Evaluators, Central Stores, IT Steering Committee
+Release Version:      2.0 Enterprise Baseline
+Date of Release:      24 September 2026
+Deployment Stack:     Modular PHP 8.2 (OOP) | Dual Engine (SQLite 3 / MariaDB 10.4) | Vanilla CSS
+========================================================================================</code></pre>
+
+<hr>
+
+<h2>📑 Table of Contents</h2>
+
+1. [Institutional Profile &amp; Project Vision](#1-institutional-profile--project-vision)
+2. [Master Architecture &amp; Technology Stack](#2-master-architecture--technology-stack)
+3. [Universal Display &amp; Responsive Layout System](#3-universal-display--responsive-layout-system)
+4. [The 14 Dedicated System Roles &amp; Access Matrix](#4-the-14-dedicated-system-roles--access-matrix)
+5. [Core Institutional Workflows &amp; Non-Negotiable Rules](#5-core-institutional-workflows--non-negotiable-rules)
+6. [Detailed 10-Module Implementation Specifications](#6-detailed-10-module-implementation-specifications)
+7. [Distributed 3-Person Team Work Allocation Matrix (Lead + 2 Juniors)](#7-distributed-3-person-team-work-allocation-matrix-lead--2-juniors)
+8. [Step-by-Step Multi-PC Git &amp; Branching Protocol](#8-step-by-step-multi-pc-git--branching-protocol)
+9. [Official Printable Document Standards](#9-official-printable-document-standards)
+10. [Database Architecture &amp; Seed Reference](#10-database-architecture--seed-reference)
+11. [Quality Assurance, Security &amp; Accreditation Checklist](#11-quality-assurance-security--accreditation-checklist)
+12. [Institutional Sign-Off &amp; Governance Endorsement](#12-institutional-sign-off--governance-endorsement)
+
+<hr>
+
+<h2>🏛️ 1. Institutional Profile &amp; Project Vision</h2>
+
+<h3>1.1 Institutional Context</h3>
+<strong>Mohamed Sathak Engineering College (MSEC)</strong> is an autonomous engineering institution pioneering technical education in Kilakarai, Ramanathapuram District, Tamil Nadu. With dozens of academic departments, specialized laboratories, research centers, and thousands of students, the college requires an authoritative, auditable, and unified resource management platform.
+
+<h3>1.2 System Vision</h3>
+<strong>MSEC SMART STOCK</strong> replaces disconnected paper registers, decentralized spreadsheets, and ad-hoc email approvals with a <strong>single source of truth</strong> across the campus lifecycle:
+<em> <strong>Procurement:</strong> Vendor directory, 3-quote comparative statements, POs, and GRNs.
+</em> <strong>Warehouse Control:</strong> Central Stores custody, bin locations, minimum safety thresholds, and stock adjustments.
+<em> <strong>Academic Allocation:</strong> Laboratory assets, departmental consumables, inter-department transfers, and returnable gate passes.
+</em> <strong>Governance &amp; Compliance:</strong> Multi-tier monetary approvals, permanent audit logs, and one-click statutory reports for <strong>NAAC (Criteria 4)</strong> and <strong>NBA (Criterion 6 &amp; 8)</strong> accreditation.
+
+<hr>
+
+<h2>⚙️ 2. Master Architecture &amp; Technology Stack</h2>
+
+<h3>2.1 Technology Stack Architecture</h3>
+<em> <strong>Server Runtime:</strong> PHP 8.2+ (Modular OOP architecture, PSR-4 styled autoloading, PDO database abstraction).
+</em> <strong>Database Engine:</strong> Dual Engine Strategy:
+  - <em>Local / Development:</em> Portable, zero-configuration SQLite 3 (<code>database/msec_stock.sqlite</code>) pre-seeded with 14 role personas, real institutional items, vendors, and transactions.
+  - <em>Production / Deployment:</em> Enterprise MariaDB 10.4+ / MySQL 8.0 (<code>database/schema_mysql.sql</code> and <code>database/seed_mysql.sql</code>) via XAMPP.
+<em> <strong>Presentation Tier:</strong> Pure Vanilla CSS Design System (<code>public/css/style.css</code>) with zero external CSS frameworks (no Tailwind/Bootstrap bloat), CSS Custom Properties (Tokens), and dynamic clamp-based responsive typography.
+</em> <strong>Client Interactivity:</strong> Lightweight Vanilla JavaScript (<code>public/js/app.js</code>) handling real-time searches, multi-item dynamic tables, modal dialogues, and print stylesheets.
+
+<h3>2.2 System Directory Map</h3>
+<pre class="code-block"><code>msec-smart-stock/
+│
+├── config/
+│   ├── app.php                   # Institutional metadata, accreditation labels, constants
+│   └── database.php              # Dual-driver connection parameters (SQLite / MariaDB)
+│
+├── core/
+│   ├── Database.php              # Singleton PDO wrapper with auto-seeding &amp; schema initialization
+│   ├── Auth.php                  # RBAC engine, session security, lockout guard &amp; role switcher
+│   ├── ApprovalEngine.php        # Multi-tier monetary threshold state machine
+│   └── AuditLogger.php           # Immutable audit ledger (user, action, before/after, IP, timestamp)
+│
+├── models/
+│   ├── Inventory.php             # Central stock catalog, consumables, bin locations, adjustments
+│   ├── Request.php               # Requisition indents, multi-item specification lines, review log
+│   ├── Distribution.php          # Issue vouchers, delivery challans, receiver acknowledgments
+│   ├── Movement.php              # Inter-department transfer workflows (CSE -&gt; ECE balance sync)
+│   ├── Asset.php                 # IT hardware register (Serial, MAC, IP, AMC, Warranty, Repair)
+│   ├── Procurement.php           # Vendor directory, 3-quote matrix, PO generation, material GRN
+│   ├── Maintenance.php           # Service tickets, maintenance history, condemnation logs
+│   ├── Budget.php                # Departmental financial heads, utilization &amp; commitments
+│   ├── Report.php                # NAAC/NBA compliance analytics &amp; executive KPI aggregation
+│   └── Notification.php          # Role-based alerts &amp; pending action counters
+│
+├── views/
+│   ├── layout/                   # Header, mobile drawer, sidebar (12 menus), breadcrumbs, footer
+│   ├── auth/                     # Authorized sign-in portal with 14-role quick evaluation roster
+│   ├── dashboards/               # 14 role-dedicated custom workspaces (Storekeeper, HOD, Director, etc.)
+│   ├── inventory/                # Live catalog, stock entry modal, stock adjustments with audit reason
+│   ├── requests/                 # Indent log, request creation form, interactive approval review view
+│   ├── distribution/             # Issue register, printable official issue voucher / delivery challan
+│   ├── movement/                 # Campus inter-dept transfers with full transit status progression
+│   ├── assets/                   # Hardware spec registry, fault reporting modal, warranty tracking
+│   ├── procurement/              # Vendor directory, L1 quote comparison, official printable PO
+│   ├── verification/             # Physical stock verification, discrepancy audits, dead stock watch
+│   ├── reports/                  # The 5 locked statutory report groups with export/print layouts
+│   └── admin/                    # User accounts, role assignment, security settings, audit logs
+│
+├── public/
+│   ├── css/style.css             # Unified institutional design system &amp; print stylesheet
+│   ├── js/app.js                 # Dynamic search filters, modal management, client calculations
+│   ├── images/msec_letterhead.png# Official college letterhead banner with all accreditations
+│   └── index.php                 # Front controller &amp; central route dispatcher
+│
+├── database/
+│   ├── msec_stock.sqlite         # Active seeded portable SQLite database
+│   ├── schema_mysql.sql          # MariaDB / MySQL production DDL schema
+│   ├── seed_mysql.sql            # Master institutional seed data script
+│   └── DatabaseSeeder.php        # Unified database migrator &amp; automated seeder
+│
+└── docs/
+    ├── UI_DOCUMENTATION.md       # Complete screen-by-screen UI guide &amp; auto-fit specification
+    ├── TEAM_COLLABORATION_GUIDE.md # 5-Person Git workflow, branch guidelines &amp; handout messages
+    └── TEAM_WORK_ALLOCATION.md   # Junior colleague work delegation packages</code></pre>
+
+<hr>
+
+<h2>🖥️ 3. Universal Display &amp; Responsive Layout System</h2>
+
+<h3>3.1 Adaptive Cross-Device Display Engine</h3>
+A key institutional requirement is that the UI must look sharp, comfortable, and perfectly proportioned on <strong>every device</strong> without horizontal scrollbars or clipped text:
+<em> <strong>High-Resolution Desktop PCs (1080p, 1440p, 4K):</strong> Generous content gutters, 2-column KPI card layouts, wide data tables with clean typography.
+</em> <strong>Standard Laptops (1366×768 to 1536×864):</strong> Adaptive font clamp (<code>clamp(14px, 0.85rem + 0.22vw, 16.5px)</code>) and flexible sidebar widths (<code>clamp(240px, 16vw, 275px)</code>).
+<em> <strong>Windows Display Scaling (100%, 125%, 150% DPI):</strong> Dynamic JavaScript Auto-Fit controller in <code>views/layout/header.php</code> detecting <code>window.devicePixelRatio</code> and preventing double-zoom distortion.
+</em> <strong>Tablets &amp; Mobile Phones:</strong> Off-canvas sliding navigation drawer, touch-friendly touch targets (min 44px), scrollable horizontal data-table containers, and responsive stacked summary cards.
+
+<hr>
+
+<h2>👥 4. The 14 Dedicated System Roles &amp; Access Matrix</h2>
+
+Every stakeholder at MSEC accesses a tailored dashboard containing only the metrics, action queues, and operations relevant to their post:
+
+<div class="table-wrap"><table class="doc-table"><tr><th>Role ID</th><th>Role Title</th><th>Key Persona Username</th><th>Core Functional Scope &amp; Authority</th></tr><tr><td><strong>01</strong></td><td><strong>Super Administrator</strong></td><td><code>superadmin</code></td><td>Security console, user accounts, password resets, system locks, master audit trail.</td></tr><tr><td><strong>02</strong></td><td><strong>Director</strong></td><td><code>director</code></td><td>High-level financial KPIs, capital sanctions exceeding ₹1,00,000, campus compliance.</td></tr><tr><td><strong>03</strong></td><td><strong>Principal</strong></td><td><code>principal</code></td><td>Institutional sanctions (₹25,001 – ₹1,00,000), academic department budget checks.</td></tr><tr><td><strong>04</strong></td><td><strong>Vice Principal</strong></td><td><code>viceprincipal</code></td><td>Administrative sanctions (₹5,001 – ₹25,000), inter-department transfers, stock quotas.</td></tr><tr><td><strong>05</strong></td><td><strong>Management Viewer</strong></td><td><code>management</code></td><td>Read-only institutional analytics, governance audits, high-level summaries.</td></tr><tr><td><strong>06</strong></td><td><strong>Central Store Keeper</strong></td><td><code>storekeeper</code></td><td><strong>The Operational Gateway:</strong> Catalog inventory, stock adjustments, GRN, issue vouchers.</td></tr><tr><td><strong>07</strong></td><td><strong>Purchase Officer</strong></td><td><code>purchaseofficer</code></td><td>Vendor onboarding, quotation comparisons, L1 analysis, PO generation.</td></tr><tr><td><strong>08</strong></td><td><strong>Accounts Officer</strong></td><td><code>accountsofficer</code></td><td>Budget head allocations, commitments, expenditure tracking, financial audits.</td></tr><tr><td><strong>09</strong></td><td><strong>HOD (Dept Head)</strong></td><td><code>hod_cse</code></td><td>Departmental requisitions, tier-1 sanction approvals (&lt; ₹5,000), lab allocations.</td></tr><tr><td><strong>10</strong></td><td><strong>Dept Coordinator</strong></td><td><code>coord_cse</code></td><td>Specification verification, technical scrutiny, inter-dept movement initiation.</td></tr><tr><td><strong>11</strong></td><td><strong>Lab In-Charge</strong></td><td><code>lab_ai</code></td><td>Lab asset register, damage reporting, consumable usage logs, maintenance requests.</td></tr><tr><td><strong>12</strong></td><td><strong>Faculty Member</strong></td><td><code>faculty_cse</code></td><td>Raising departmental requisitions, classroom equipment custody tracking.</td></tr><tr><td><strong>13</strong></td><td><strong>Lab Technician</strong></td><td><code>technician</code></td><td>Equipment servicing logs, preventative maintenance, physical count audits.</td></tr><tr><td><strong>14</strong></td><td><strong>Auditor (Internal/NAAC)</strong></td><td><code>auditor</code></td><td>Read-only compliance portal, physical audit discrepancies, dead stock inspection.</td></tr></table></div>
+
+<hr>
+
+<h2>🔒 5. Core Institutional Workflows &amp; Non-Negotiable Rules</h2>
+
+<h3>Rule 1: The Store Keeper Operational Gateway</h3>
+The Central Store Keeper is <strong>never bypassed</strong> at MSEC. Even for a ₹1 requisition, every request must pass through the Store Keeper for:
+1. Verification against current warehouse balances (preventing duplicate purchases).
+2. Existing stock check and specification review.
+3. Official Approval Sheet generation before financial sanctions are executed.
+4. Material receipt (GRN) and official Delivery Challan / Issue Voucher dispatch.
+
+<h3>Rule 2: Admin-Controlled Security (Zero Self-Service Resets)</h3>
+To maintain strict institutional accountability:
+<em> <strong>No Public Self-Registration:</strong> Accounts are provisioned exclusively by the System Administrator.
+</em> <strong>No Public Password Reset Links or OTPs:</strong> If an employee forgets their password, they must contact the Central IT Administrator. The administrator verifies their identity and issues a secure reset through the Admin Console.
+<em> <strong>Brute-Force Lockout:</strong> 5 consecutive failed attempts lock the account automatically, requiring administrator unlocking.
+
+<h3>Rule 3: Monetary Approval Threshold Matrix</h3>
+All requisitions follow an automated approval ladder based on estimated value:
+</em> <strong>Tier 1 (Below ₹5,000):</strong> Requester → Dept Coordinator → HOD → Central Store Keeper.
+<em> <strong>Tier 2 (₹5,001 – ₹25,000):</strong> Tier 1 approvals + Vice Principal Sanction.
+</em> <strong>Tier 3 (₹25,001 – ₹1,00,000):</strong> Tier 2 approvals + Principal Institutional Sanction.
+<em> <strong>Tier 4 (Above ₹1,00,000):</strong> Tier 3 approvals + Director Executive Sanction.
+
+<hr>
+
+<h2>📦 6. Detailed 10-Module Implementation Specifications</h2>
+
+<h3>Module 1: System Administration, User Accounts &amp; Audit Trails</h3>
+</em> <strong>Files:</strong> <code>views/admin/users.php</code>, <code>views/admin/security.php</code>, <code>views/admin/audit.php</code>, <code>core/Auth.php</code>, <code>core/AuditLogger.php</code>
+<em> <strong>Features:</strong> User CRUD, role assignment, active/locked toggle, admin password reset with prefilled secure credentials, and immutable logging recording user ID, action, before/after JSON states, IP address, and timestamps.
+
+<h3>Module 2: Master Inventory &amp; Real-Time Stock Tracking</h3>
+</em> <strong>Files:</strong> <code>models/Inventory.php</code>, <code>views/inventory/index.php</code>
+<em> <strong>Features:</strong> Consumable vs Non-Consumable cataloging, Department Store balances, Central Warehouse balances, bin/shelf locations, minimum safety stock thresholds, and Stock Adjustments (requiring formal justification and document reference).
+
+<h3>Module 3: Stock Requisitions &amp; Indent Lifecycle</h3>
+</em> <strong>Files:</strong> <code>models/Request.php</code>, <code>views/requests/index.php</code>, <code>views/requests/view.php</code>
+<em> <strong>Features:</strong> Indent raising with auto-generated format (<code>CSE-REQ-2026-00125</code>), multi-item specification lines (Item, Quantity, Purpose, Estimated Unit Cost), and status lifecycle progression (<code>Draft → Submitted → Under Review → Approved → Fulfilled</code>).
+
+<h3>Module 4: Dynamic Approval Engine &amp; Approval Sheets</h3>
+</em> <strong>Files:</strong> <code>core/ApprovalEngine.php</code>, <code>views/approval_sheets/view.php</code>
+<em> <strong>Features:</strong> Evaluation of monetary thresholds, routing to correct authority tier, digital approval/rejection decision recording with mandatory review remarks, and printable Official Approval Sheets.
+
+<h3>Module 5: Stock Distribution &amp; Delivery Challans</h3>
+</em> <strong>Files:</strong> <code>models/Distribution.php</code>, <code>views/distribution/index.php</code>, <code>views/distribution/voucher.php</code>
+<em> <strong>Features:</strong> Issuing stock from Central Store to Department Stores (CSE, ECE, Mech), generation of printable Official Issue Vouchers with barcode visual and 3-party signature blocks (Store Keeper, Department Receiver, Principal/VP), and digital acknowledgment updating department inventory.
+
+<h3>Module 6: Stock Movement &amp; Inter-Department Transfers</h3>
+</em> <strong>Files:</strong> <code>models/Movement.php</code>, <code>views/movement/index.php</code>
+<em> <strong>Features:</strong> Cross-department transfers (e.g., CSE to ECE 5 Keyboards), transit status tracking (<code>Submitted → Approved → Dispatched → In Transit → Acknowledged</code>), and automated stock balance synchronization upon acknowledgment.
+
+<h3>Module 7: IT Asset Management &amp; Hardware Maintenance</h3>
+</em> <strong>Files:</strong> <code>models/Asset.php</code>, <code>models/Maintenance.php</code>, <code>views/assets/index.php</code>, <code>views/maintenance/index.php</code>
+<em> <strong>Features:</strong> Asset registry capturing Serial Number, MAC Address, IP Address, Configuration (CPU/RAM/SSD), AMC details, and Warranty dates; damage fault reporting modal (<code>serviceModal</code>), maintenance logging, and condemnation workflows.
+
+<h3>Module 8: Procurement, Vendor Management &amp; Purchase Orders</h3>
+</em> <strong>Files:</strong> <code>models/Procurement.php</code>, <code>views/procurement/index.php</code>, <code>views/procurement/po.php</code>
+<em> <strong>Features:</strong> Vendor onboarding (GSTIN, PAN, bank info, ratings, blacklist toggle), 3-quote comparative statement matrix with L1 lowest-bidder recommendation, official printable Purchase Orders with auto-calculated GST and net totals, and Goods Receipt Notes (GRN) for material inward inspection.
+
+<h3>Module 9: Physical Stock Verification &amp; Dead Stock Watchlist</h3>
+</em> <strong>Files:</strong> <code>views/verification/index.php</code>, <code>models/Inventory.php</code>
+<em> <strong>Features:</strong> Periodic physical count audits, system vs physical count discrepancy logging, variance justification, and Dead Stock Watchlist tracking items idle for 1, 2, or 3+ years.
+
+<h3>Module 10: Statutory Reports &amp; NAAC / NBA Accreditation Analytics</h3>
+</em> <strong>Files:</strong> <code>models/Report.php</code>, <code>views/reports/index.php</code>
+<em> <strong>Features:</strong> 5 locked statutory report groups:
+  1. </em>Stock Reports:<em> Current valuation, low-stock warnings, category distribution.
+  2. </em>Movement Reports:<em> Fast-moving vs slow-moving items, inter-department transit history.
+  3. </em>Consumption Reports:<em> Department-wise and lab-wise consumption expenditure.
+  4. </em>Financial Reports:<em> Budget utilization, PO commitments, annual capital expenditure.
+  5. </em>Audit Reports:<em> NAAC Criteria 4 IT infrastructure assets, NBA lab equipment logs, physical audit histories.
+
+<hr>
+
+<h2>👥 7. Distributed 3-Person Team Work Allocation Matrix (Lead + 2 Juniors)</h2>
+
+To allow the 3-person development team (<strong>Muhammad Shakil as Lead + 2 Junior Developers</strong>) to work simultaneously across multiple PCs without code collisions, the repository enforces <strong>Strict File Boundaries</strong>:
+
+<pre class="code-block"><code>┌────────────────────────────────────────────────────────┐
+                               │             TEAM LEADER (Muhammad Shakil)              │
+                               │  - Core Engine, Auth, Security &amp; Approval Engine       │
+                               │  - Global Responsive Design System &amp; CSS Tokens        │
+                               │  - Requisitions, Indents &amp; Multi-Tier Approvals        │
+                               │  - Procurement, Vendors, POs &amp; Material GRN           │
+                               │  - Master Inventory, Central Stores &amp; Distribution     │
+                               │  - NAAC/NBA Reports, Physical Verification &amp; Merges    │
+                               │  (MUHAMMAD SHAKIL HANDLES ALL OF THE ABOVE ALONE)      │
+                               └───────────────────────────┬────────────────────────────┘
+                                                           │
+                            ┌──────────────────────────────┴──────────────────────────────┐
+                            ▼                                                             ▼
+        ┌───────────────────────────────────────┐             ┌───────────────────────────────────────┐
+        │       JUNIOR 1 (Colleague A)          │             │       JUNIOR 2 (Colleague B)          │
+        │   Module: IT Asset Tracking           │             │   Module: Stock Movement &amp; Transfers  │
+        │   Files:                              │             │   Files:                              │
+        │   - models/Asset.php                  │             │   - models/Movement.php               │
+        │   - views/assets/index.php            │             │   - views/movement/index.php          │
+        │   Branch:                             │             │   Branch:                             │
+        │   feature/asset-management            │             │   feature/stock-movement              │
+        └───────────────────────────────────────┘             └───────────────────────────────────────┘</code></pre>
+
+<div class="table-wrap"><table class="doc-table"><tr><th>Developer</th><th>Assigned Role</th><th>Branch Name</th><th>Assigned Files to Edit (ONLY)</th><th>Key Deliverables</th></tr><tr><td><strong>Lead (Muhammad Shakil)</strong></td><td><strong>System Architect &amp; Lead</strong></td><td><code>main</code></td><td><code>core/</code>, <code>config/</code>, <code>public/index.php</code>, <code>public/css/style.css</code>, <code>views/layout/</code>, <code>views/inventory/</code>, <code>views/requests/</code>, <code>views/procurement/</code>, <code>views/distribution/</code>, <code>views/reports/</code>, <code>views/verification/</code>, <code>views/admin/</code></td><td>Core architecture, database migrations, security, universal CSS layout, requisitions &amp; approvals, procurement &amp; POs, central inventory &amp; vouchers, NAAC/NBA reports, and PR merging. <strong>(Done by Muhammad alone)</strong></td></tr><tr><td><strong>Junior 1 (Colleague A)</strong></td><td><strong>IT Asset Specialist</strong></td><td><code>feature/asset-management</code></td><td><code>models/Asset.php</code>&lt;br&gt;<code>views/assets/index.php</code></td><td>Hardware specifications register (MAC, IP, Serial, AMC), damage logging modal, warranty tracking, asset RBAC guards.</td></tr><tr><td><strong>Junior 2 (Colleague B)</strong></td><td><strong>Transfers Specialist</strong></td><td><code>feature/stock-movement</code></td><td><code>models/Movement.php</code>&lt;br&gt;<code>views/movement/index.php</code></td><td>Inter-department transfer flow, transit lifecycle progression (<code>Submitted → Dispatched → Acknowledged</code>), live stock balance sync.</td></tr></table></div>
+
+<div class="alert alert-important"><strong>IMPORTANT:</strong> <strong>The Zero Conflict Guarantee:</strong> Because Junior 1 and Junior 2 only modify their dedicated <code>models/</code> file and <code>views/</code> folder, Git merge conflicts are mathematically <strong>ZERO (0%)</strong>. Muhammad can merge both branches into <code>main</code> cleanly without any code collisions.</div>
+
+<hr>
+
+<h2>🚀 8. Step-by-Step Multi-PC Git &amp; Branching Protocol</h2>
+
+<h3>8.1 Setup on Each Team Member's Computer</h3>
+Each junior developer clones the central repository and checks out their assigned branch:
+<pre class="code-block"><code># Clone the repository
+git clone https://github.com/tech-shakil/msec-smart-stock.git
+cd msec-smart-stock
+
+<h1>Switch to assigned feature branch:</h1>
+git checkout -b feature/asset-management         # (For Junior 1)
+git checkout -b feature/stock-movement          # (For Junior 2)
+
+<h1>Start local server (Zero database config required; SQLite is pre-seeded):</h1>
+run.bat
+<h1>(Or: php -S localhost:8000 -t public)</h1>
+
+<h1>Open in browser: http://localhost:8000</code></pre></h1>
+
+<h3>8.2 Submitting Work (Pull Request Workflow)</h3>
+When a developer completes their tasks:
+<pre class="code-block"><code># Stage and commit only their assigned files
+git add &lt;assigned_files&gt;
+git commit -m "feat(&lt;module&gt;): implement assigned features and test cases"
+
+<h1>Push to their feature branch</h1>
+git push origin &lt;feature_branch_name&gt;</code></pre>
+</em>The developer then visits GitHub and opens a <strong>Pull Request (PR)</strong> targeting the <code>main</code> branch.<em>
+
+<h3>8.3 How the Team Lead (Muhammad) Merges</h3>
+1. Open each Pull Request on GitHub.
+2. Inspect <code>Files Changed</code> to verify the developer stayed within their file boundaries.
+3. Click <strong>Merge Pull Request</strong> → <strong>Confirm Merge</strong>.
+4. Pull the merged code down to the Lead PC:
+   <pre class="code-block"><code>git checkout main
+   git pull origin main</code></pre>
+
+<hr>
+
+<h2>📄 9. Official Printable Document Standards</h2>
+
+All printable institutional templates are engineered with a <strong>100% Contained Fixed-Width Engine</strong> (<code>table-layout: fixed; width: 100%</code>) to guarantee that documents print cleanly on A4 paper with zero table spillage:
+
+<h3>9.1 Purchase Order Template (<code>views/procurement/po.php</code>)</h3>
+</em> <strong>Header:</strong> Full MSEC institutional letterhead banner with AICTE, Anna University, NAAC, NBA, and ISO 9001:2015 details.
+<em> <strong>Metadata Grid:</strong> Two-column box showing Supplier / Vendor Details (GSTIN, PAN, Contact) and PO Meta (PO Number, Date, Indent Code, Department, Status).
+</em> <strong>Column Allocation:</strong> S.No (6%), Item Code (15%), Description &amp; Technical Specs (35%), Quantity (10%), Unit (8%), Unit Rate (12%), Amount (14%).
+<em> <strong>Signatures:</strong> 3-tier signature block: Prepared by (Purchase Officer), Verified by (Accounts Officer / Central Store Keeper), Approved by (Principal / Director).
+
+<h3>9.2 Distribution Issue Voucher / Delivery Challan (<code>views/distribution/voucher.php</code>)</h3>
+</em> <strong>Header:</strong> College banner with Official Delivery Challan title.
+<em> <strong>Barcode Visual:</strong> Monospace encoded voucher identification (e.g., <code></em>ISS-2026-00001<em></code>).
+</em> <strong>Column Allocation:</strong> S.No (6%), Item Code (16%), Description (42%), Issued Qty (12%), Unit (10%), Value (14%).
+<em> <strong>Signatures:</strong> Store Keeper (Issuer), Department In-Charge (Receiver), Vice Principal (Sanctioning Authority).
+
+<hr>
+
+<h2>🗄️ 10. Database Architecture &amp; Seed Reference</h2>
+
+The database includes 17 relational tables supporting both SQLite and MySQL/MariaDB:
+</em> <code>users</code>: User credentials, bcrypt password hashes, role keys, failed attempts, and lock status.
+<em> <code>departments</code>: Academic and administrative departments with HOD mappings.
+</em> <code>laboratories</code>: Departmental labs with Lab In-Charge mappings.
+<em> <code>categories</code> &amp; <code>subcategories</code>: Hierarchical classification for consumables, IT equipment, stationery, and lab apparatus.
+</em> <code>items</code>: Master catalog with SKU codes, unit definitions, safety thresholds, and unit costs.
+<em> <code>inventory</code>: Live stock levels per department store and central warehouse with bin locations.
+</em> <code>stock_adjustments</code>: Historical adjustments with mandatory reason and document references.
+<em> <code>stock_requests</code> &amp; <code>stock_request_items</code>: Indents with line-item quantities and estimated costs.
+</em> <code>approvals</code>: Multi-tier approval actions, decision stamps, and reviewer comments.
+<em> <code>vendors</code>: Supplier directory with GSTIN, PAN, and rating metrics.
+</em> <code>purchase_orders</code> &amp; <code>po_items</code>: Generated POs, delivery terms, and tax calculations.
+<em> <code>goods_receipts</code> &amp; <code>grn_items</code>: Material inward inspection and warehouse increment logs.
+</em> <code>stock_issues</code> &amp; <code>stock_issue_items</code>: Issue orders and delivery vouchers.
+<em> <code>stock_transfers</code>: Inter-department transfer tracking with full transit lifecycle.
+</em> <code>assets</code>: IT and laboratory hardware tracking with MAC, IP, configuration, and warranty.
+<em> <code>maintenance_logs</code>: Service tickets, breakdown costs, and repair statuses.
+</em> <code>audit_logs</code>: Immutable security and transaction trail.
+
+<hr>
+
+<h2>✅ 11. Quality Assurance, Security &amp; Accreditation Checklist</h2>
+
+Use this checklist during final evaluation and milestone verification:
+
+<div class="table-wrap"><table class="doc-table"><tr><th>Check</th><th>Verification Objective</th><th>Pass Criteria</th><th>Status</th></tr><tr><td><strong>QA-01</strong></td><td>Store Keeper Gateway</td><td>No item can bypass Store Keeper review before dispatch.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-02</strong></td><td>Security &amp; Account Lockdown</td><td>Zero self-registration; 5 failed logins triggers account lock.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-03</strong></td><td>Monetary Threshold Routing</td><td>&lt;5k (HOD/Store), 5k-25k (VP), 25k-1L (Principal), &gt;1L (Director).</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-04</strong></td><td>Cross-Device Auto-Fit</td><td>UI fits comfortably on laptops (1366x768 to 1536x864) and desktops.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-05</strong></td><td>Printable Document Layout</td><td>PO and Voucher tables stay 100% inside borders without overflow.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-06</strong></td><td>Stock Balance Synchronization</td><td>Transfer acknowledgment increments destination &amp; decrements source.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-07</strong></td><td>Hardware IT Spec Registry</td><td>Serial Number, MAC Address, IP, and AMC fields captured.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-08</strong></td><td>Vendor 3-Quote Matrix</td><td>Quotation comparisons display with automatic L1 highlight.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-09</strong></td><td>NAAC / NBA Reports</td><td>All 5 statutory report groups export and print cleanly.</td><td><code>[ PASSED ]</code></td></tr><tr><td><strong>QA-10</strong></td><td>Immutable Audit Trail</td><td>Every mutation writes an unalterable log with user, IP, and time.</td><td><code>[ PASSED ]</code></td></tr></table></div>
+
+<hr>
+
+<h2>✍️ 12. Institutional Sign-Off &amp; Governance Endorsement</h2>
+
+This Master Implementation Plan has been verified and approved as the official operational baseline for <strong>MSEC SMART STOCK</strong>:
+
+<pre class="code-block"><code>========================================================================================
+PROJECT ARCHITECT &amp; TEAM LEADER:
+Signature: ___________________________               Date: 24 September 2026
+Name:      Engr. Muhammad Shakil
+Title:     System Architect &amp; Lead Developer
+
+CENTRAL STORE KEEPER:
+Signature: ___________________________               Date: 24 September 2026
+Name:      Mr. S. Storekeeper
+Title:     Central Store In-Charge, MSEC
+
+HEAD OF DEPARTMENT (CSE / IT STEERING):
+Signature: ___________________________               Date: 24 September 2026
+Name:      Dr. H. HOD CSE
+Title:     Professor &amp; Head, Department of CSE
+
+PRINCIPAL / INSTITUTIONAL HEAD:
+Signature: ___________________________               Date: 24 September 2026
+Name:      Dr. P. Principal
+Title:     Principal, Mohamed Sathak Engineering College (MSEC)
+========================================================================================</code></pre>
+
+<hr>
+<em>End of Master Implementation Plan — MSEC SMART STOCK (Autonomous)</em>
+
+    </div>
+</div>
+
+</body>
+</html>

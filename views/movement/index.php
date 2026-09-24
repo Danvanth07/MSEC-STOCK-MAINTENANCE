@@ -21,6 +21,45 @@ $items = Inventory::getAllItems();
     </div>
 </div>
 
+<?php
+$totalMovements = count($movements);
+$inTransit = count(array_filter($movements, fn($m) => in_array($m['status'], ['Dispatched', 'In Transit'])));
+$pendingAppr = count(array_filter($movements, fn($m) => in_array($m['status'], ['Submitted', 'Pending'])));
+$completed = count(array_filter($movements, fn($m) => in_array($m['status'], ['Closed', 'Acknowledged'])));
+?>
+
+<!-- Movement KPI Overview Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #e0e7ff; color: #4338ca;">📦</div>
+        <div class="stat-content">
+            <div class="stat-value"><?= $totalMovements ?> Orders</div>
+            <div class="stat-label">Total Movement Cycles</div>
+        </div>
+    </div>
+    <div class="stat-card info">
+        <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">🚚</div>
+        <div class="stat-content">
+            <div class="stat-value"><?= $inTransit ?> Transfers</div>
+            <div class="stat-label">In-Transit Consignments</div>
+        </div>
+    </div>
+    <div class="stat-card warning">
+        <div class="stat-icon" style="background: #fef3c7; color: #b45309;">⏳</div>
+        <div class="stat-content">
+            <div class="stat-value"><?= $pendingAppr ?> Pending</div>
+            <div class="stat-label">Awaiting HoD Authorization</div>
+        </div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-icon" style="background: #dcfce7; color: #15803d;">✅</div>
+        <div class="stat-content">
+            <div class="stat-value"><?= $completed ?> Closed</div>
+            <div class="stat-label">Delivered & Acknowledged</div>
+        </div>
+    </div>
+</div>
+
 <!-- Highlighted Workflow Box: Section 13 Keyboard Transfer Example -->
 <div style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); border: 1px solid #c7d2fe; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px;">
     <div style="display: flex; align-items: center; justify-content: space-between;">

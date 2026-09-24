@@ -71,18 +71,23 @@
     padding: 0;
 }
 
-html, body {
+html {
+    font-size: clamp(14px, 0.85rem + 0.22vw, 16.5px);
     height: 100%;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
+    height: 100%;
     font-family: var(--font-sans);
     background-color: var(--bg-body);
     color: var(--text-main);
-    line-height: 1.5;
+    font-size: 1rem;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    zoom: var(--desktop-zoom, 1);
 }
 
 /* Layout Hierarchy */
@@ -90,13 +95,14 @@ body {
     display: flex;
     min-height: 100vh;
     position: relative;
+    width: 100%;
 }
 
 /* ==========================================================
    SIDEBAR NAVIGATION (PC Desktop & Mobile Off-Canvas)
    ========================================================== */
 .app-sidebar {
-    width: 265px;
+    width: clamp(240px, 16vw, 275px);
     background: var(--bg-sidebar);
     color: #e2e8f0;
     display: flex;
@@ -112,7 +118,7 @@ body {
 }
 
 .sidebar-header {
-    padding: 18px 18px 14px;
+    padding: 20px 20px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -120,19 +126,19 @@ body {
 }
 
 .sidebar-logo {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     object-fit: contain;
     border-radius: 8px;
     background: #ffffff;
-    padding: 2px;
+    padding: 3px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     flex-shrink: 0;
 }
 
 .brand-title {
     font-family: var(--font-heading);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 800;
     letter-spacing: 0.5px;
     color: #ffffff;
@@ -140,7 +146,7 @@ body {
 }
 
 .brand-subtitle {
-    font-size: 10.5px;
+    font-size: 11.5px;
     color: #94a3b8;
     letter-spacing: 0.2px;
     white-space: nowrap;
@@ -198,34 +204,34 @@ body {
 
 /* Sidebar Nav Links */
 .sidebar-nav {
-    padding: 12px 10px;
+    padding: 14px 12px;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
     flex-grow: 1;
 }
 
 .nav-label {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     color: #64748b;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    padding: 14px 12px 6px;
+    padding: 16px 14px 8px;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 9px 12px;
+    padding: 11px 14px;
     color: #cbd5e1;
     text-decoration: none;
-    font-size: 13.5px;
+    font-size: 14.5px;
     font-weight: 500;
     border-radius: var(--radius-md);
     transition: all 0.2s ease;
-    min-height: 40px;
+    min-height: 42px;
 }
 
 .nav-link:hover {
@@ -242,8 +248,8 @@ body {
 }
 
 .nav-icon {
-    font-size: 15px;
-    width: 20px;
+    font-size: 18px;
+    width: 24px;
     text-align: center;
     flex-shrink: 0;
 }
@@ -305,7 +311,7 @@ body {
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
-    padding: 12px 24px;
+    padding: 10px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -313,14 +319,16 @@ body {
     top: 0;
     z-index: 50;
     box-shadow: var(--shadow-xs);
-    gap: 12px;
+    gap: 16px;
+    flex-wrap: nowrap;
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
-    min-width: 0;
+    gap: 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 /* Hamburger button for phones/tablets */
@@ -328,8 +336,8 @@ body {
     display: none;
     flex-direction: column;
     justify-content: space-around;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     background: #f1f5f9;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
@@ -354,18 +362,21 @@ body {
 .brand-header-info {
     display: flex;
     align-items: center;
-    gap: 12px;
-    min-width: 0;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .header-brand-logo {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     object-fit: contain;
     flex-shrink: 0;
 }
 
 .header-title-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     min-width: 0;
 }
 
@@ -373,7 +384,8 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .portal-title {
@@ -382,6 +394,8 @@ body {
     font-weight: 800;
     color: var(--text-main);
     line-height: 1.2;
+    white-space: nowrap;
+    letter-spacing: -0.3px;
 }
 
 .header-tagline-badge {
@@ -389,10 +403,11 @@ body {
     font-weight: 700;
     color: #c2410c;
     background: #ffedd5;
-    padding: 2px 7px;
+    padding: 1px 7px;
     border-radius: var(--radius-full);
     letter-spacing: 0.3px;
     border: 1px solid #fed7aa;
+    white-space: nowrap;
 }
 
 .header-institution-sub {
@@ -400,28 +415,144 @@ body {
     color: var(--text-muted);
     font-weight: 500;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .header-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-shrink: 0;
+    flex-wrap: nowrap;
+}
+
+/* Desktop PC Scale Controls in Header */
+.desktop-scale-controls {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: #f8fafc;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid #cbd5e1;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.desktop-scale-controls:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.scale-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 0 4px;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.zoom-btn {
+    background: transparent;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    padding: 3px 6px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.zoom-btn:hover {
+    background: #e2e8f0;
+    color: var(--text-main);
+}
+
+.zoom-btn.active {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.4);
+}
+
+/* Browser Zoom Notice Banner */
+.zoom-alert-banner {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-bottom: 1.5px solid #93c5fd;
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 13.5px;
+    color: #1e3a8a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.zoom-alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.zoom-alert-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.zoom-alert-text {
+    line-height: 1.4;
+}
+
+.zoom-alert-text kbd {
+    background: #ffffff;
+    border: 1px solid #93c5fd;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-family: monospace;
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-alert-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.zoom-alert-close {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: #475569;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.15s;
+}
+
+.zoom-alert-close:hover {
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 /* Quick Persona Switcher Pill */
 .persona-switcher {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     background: #f8fafc;
-    padding: 5px 12px;
+    padding: 3px 10px;
     border-radius: var(--radius-full);
     border: 1.5px solid #cbd5e1;
-    font-size: 12.5px;
+    font-size: 11.5px;
     transition: all 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .persona-switcher:hover, .persona-switcher:focus-within {
@@ -430,13 +561,13 @@ body {
 }
 
 .persona-icon {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .persona-switcher label {
     font-weight: 600;
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 11.5px;
 }
 
 .persona-select {
@@ -446,9 +577,9 @@ body {
     color: var(--primary);
     outline: none;
     cursor: pointer;
-    font-size: 12.5px;
+    font-size: 11.5px;
     font-family: var(--font-sans);
-    max-width: 220px;
+    max-width: 175px;
 }
 
 /* User Profile Badge */
@@ -502,8 +633,12 @@ body {
    PAGE CONTENT & HEADERS
    ========================================================== */
 .page-content {
-    padding: 24px 28px;
+    padding: clamp(16px, 1.8vw, 28px) clamp(16px, 2.2vw, 36px);
     flex-grow: 1;
+    min-height: calc(100vh - 65px);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .page-header {
@@ -511,23 +646,23 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 22px;
-    gap: 16px;
+    gap: 14px;
     flex-wrap: wrap;
 }
 
 .page-title {
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: clamp(20px, 1.3rem + 0.6vw, 26px);
     font-weight: 800;
     color: #0f172a;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.4px;
     line-height: 1.2;
 }
 
 .page-desc {
-    font-size: 13.5px;
+    font-size: clamp(13px, 0.85rem + 0.1vw, 14.5px);
     color: var(--text-muted);
-    margin-top: 3px;
+    margin-top: 4px;
 }
 
 /* ==========================================================
@@ -535,15 +670,15 @@ body {
    ========================================================== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: clamp(12px, 1.4vw, 18px);
+    margin-bottom: 22px;
 }
 
 .stat-card {
     background: var(--bg-surface);
     border-radius: var(--radius-lg);
-    padding: 18px 20px;
+    padding: 20px 22px;
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
     position: relative;
@@ -568,7 +703,7 @@ body {
 }
 
 .stat-title {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -577,7 +712,7 @@ body {
 
 .stat-value {
     font-family: var(--font-heading);
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 800;
     color: #0f172a;
     margin: 6px 0 2px;
@@ -586,7 +721,7 @@ body {
 }
 
 .stat-subtext {
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--text-muted);
     display: flex;
     align-items: center;
@@ -603,9 +738,16 @@ body {
 /* Responsive Split Layouts */
 .responsive-split-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
-    margin-bottom: 24px;
+    grid-template-columns: minmax(0, 1.85fr) minmax(0, 1.15fr);
+    gap: clamp(16px, 1.8vw, 24px);
+    margin-bottom: 22px;
+}
+
+@media (max-width: 1280px) {
+    .responsive-split-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 /* ==========================================================
@@ -621,7 +763,7 @@ body {
 }
 
 .card-header {
-    padding: 16px 20px;
+    padding: clamp(14px, 1.4vw, 18px) clamp(16px, 1.8vw, 24px);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -633,13 +775,13 @@ body {
 
 .card-title {
     font-family: var(--font-heading);
-    font-size: 16px;
+    font-size: clamp(15.5px, 1.05rem + 0.2vw, 18px);
     font-weight: 700;
     color: #0f172a;
 }
 
 .card-body {
-    padding: 20px;
+    padding: clamp(16px, 1.6vw, 22px);
 }
 
 /* Modern Data Table with Horizontal Smooth Scroll on Mobile */
@@ -651,26 +793,26 @@ body {
 
 .data-table {
     width: 100%;
-    min-width: 650px; /* Ensures columns never squeeze on mobile screens */
+    min-width: 580px;
     border-collapse: collapse;
-    font-size: 13.5px;
+    font-size: clamp(13px, 0.85rem + 0.1vw, 14.5px);
     text-align: left;
 }
 
 .data-table th {
     background: #f8fafc;
-    padding: 12px 16px;
+    padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 18px);
     font-weight: 700;
     color: #475569;
     border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
-    font-size: 12.5px;
+    font-size: clamp(12px, 0.8rem + 0.1vw, 13px);
     text-transform: uppercase;
     letter-spacing: 0.4px;
 }
 
 .data-table td {
-    padding: 13px 16px;
+    padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 18px);
     border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
     vertical-align: middle;
@@ -684,11 +826,11 @@ body {
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: var(--radius-full);
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.2;
     white-space: nowrap;
 }
 
@@ -707,8 +849,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 9px 18px;
+    font-size: 14px;
     font-weight: 600;
     border-radius: var(--radius-md);
     border: 1px solid transparent;
@@ -716,7 +858,7 @@ body {
     text-decoration: none;
     transition: all 0.2s ease;
     font-family: var(--font-sans);
-    min-height: 38px;
+    min-height: 40px;
     white-space: nowrap;
 }
 
@@ -968,6 +1110,64 @@ body {
         padding: 16px !important;
         margin: 0 !important;
         max-width: 100% !important;
+    }
+}
+
+/* ==========================================================
+   DESKTOP & LAPTOP ADAPTIVE SYSTEM (>= 1025px Monitors)
+   ========================================================== */
+@media (min-width: 1025px) {
+    body {
+        zoom: var(--desktop-zoom, 1);
+    }
+
+    .app-sidebar {
+        width: clamp(240px, 16vw, 275px);
+        flex-shrink: 0;
+    }
+
+    .page-content {
+        padding: clamp(18px, 2vw, 32px) clamp(20px, 2.5vw, 40px);
+        max-width: 100%;
+        min-height: calc(100vh - 65px);
+    }
+
+    .data-table th, .data-table td {
+        padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 18px);
+    }
+
+    .stat-card {
+        padding: clamp(16px, 1.6vw, 22px) clamp(18px, 1.8vw, 24px);
+        min-height: clamp(88px, 9vw, 110px);
+    }
+
+    .stat-value {
+        font-size: clamp(22px, 1.5rem + 0.5vw, 28px);
+        font-weight: 800;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: clamp(13px, 0.85rem + 0.1vw, 14px);
+        min-height: 40px;
+    }
+
+    .form-control {
+        padding: 9px 13px;
+        font-size: clamp(13px, 0.85rem + 0.1vw, 14.5px);
+        min-height: 40px;
+    }
+}
+
+/* Specific Laptop Screen Optimization (1025px - 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
+    .app-sidebar {
+        width: 245px;
+    }
+    .header-institution-sub {
+        max-width: 280px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 

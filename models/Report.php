@@ -98,21 +98,29 @@ class Report {
 
     public static function getStockLedger(): array {
         $pdo = Database::getInstance();
-        $stmt = $pdo->query("SELECT t.*, i.item_code, i.item_name, s.name as store_name, u.full_name as user_name
-                             FROM stock_transactions t
-                             JOIN items i ON t.item_id = i.id
-                             JOIN stores s ON t.store_id = s.id
-                             LEFT JOIN users u ON t.created_by = u.id
-                             ORDER BY t.id DESC LIMIT 100");
-        return $stmt->fetchAll();
+        try {
+            $stmt = $pdo->query("SELECT t.*, i.item_code, i.item_name, s.name as store_name, u.full_name as user_name
+                                 FROM stock_transactions t
+                                 JOIN items i ON t.item_id = i.id
+                                 JOIN stores s ON t.store_id = s.id
+                                 LEFT JOIN users u ON t.created_by = u.id
+                                 ORDER BY t.id DESC LIMIT 100");
+            return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     public static function getActivityLogs(): array {
         $pdo = Database::getInstance();
-        $stmt = $pdo->query("SELECT a.*, u.full_name, u.username
-                             FROM activity_logs a
-                             LEFT JOIN users u ON a.user_id = u.id
-                             ORDER BY a.id DESC LIMIT 100");
-        return $stmt->fetchAll();
+        try {
+            $stmt = $pdo->query("SELECT a.*, u.full_name, u.username
+                                 FROM audit_logs a
+                                 LEFT JOIN users u ON a.user_id = u.id
+                                 ORDER BY a.id DESC LIMIT 100");
+            return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        } catch (Exception $e) {
+            return [];
+        }
     }
 }

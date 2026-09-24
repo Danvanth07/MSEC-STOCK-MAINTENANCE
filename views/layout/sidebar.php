@@ -11,15 +11,21 @@ $roleName = ROLES[$currentRole]['name'] ?? $currentRole;
 $roleLevel = ROLES[$currentRole]['level'] ?? 'User';
 
 // Pre-calculate section visibilities based on permissions
-$canProcure = Auth::canAccessRoute('procurement');
-$canVerify  = Auth::canAccessRoute('verification');
-$canReport  = Auth::canAccessRoute('reports');
-$showProcurementSection = $canProcure || $canVerify || $canReport;
+$canProcure     = Auth::canAccessRoute('procurement');
+$canBudget      = Auth::canAccessRoute('budget');
+$canVerify      = Auth::canAccessRoute('verification');
+$canReport      = Auth::canAccessRoute('reports');
+$showGovernance = $canProcure || $canBudget || $canVerify || $canReport;
 
-$canMasters = Auth::canAccessRoute('admin_masters');
-$canUsers   = Auth::canAccessRoute('admin_users');
-$canAudit   = Auth::canAccessRoute('admin_audit');
-$showAdminSection = $canMasters || $canUsers || $canAudit;
+$canApprSheet   = Auth::canAccessRoute('approval_sheet');
+$canMaintenance = Auth::canAccessRoute('maintenance');
+
+$canMasters  = Auth::canAccessRoute('admin_masters');
+$canUsers    = Auth::canAccessRoute('admin_users');
+$canSecurity = Auth::canAccessRoute('admin_security');
+$canAudit    = Auth::canAccessRoute('admin_audit');
+$canSettings = Auth::canAccessRoute('admin_settings');
+$showAdminSection = $canMasters || $canUsers || $canSecurity || $canAudit || $canSettings;
 ?>
 <aside class="app-sidebar" id="appSidebar">
     <div class="sidebar-header">
@@ -38,7 +44,7 @@ $showAdminSection = $canMasters || $canUsers || $canAudit;
     <div class="sidebar-role-card">
         <div class="role-pill-level"><?= htmlspecialchars($roleLevel) ?></div>
         <div class="role-pill-title"><?= htmlspecialchars($roleName) ?></div>
-        <div class="role-pill-dept"><?= htmlspecialchars($user['dept_name'] ?? 'Meenakshi Sathak Campus') ?></div>
+        <div class="role-pill-dept"><?= htmlspecialchars($user['dept_name'] ?? 'Kilakarai Campus') ?></div>
     </div>
 
     <nav class="sidebar-nav">
@@ -61,21 +67,28 @@ $showAdminSection = $canMasters || $canUsers || $canAudit;
         <?php if (Auth::canAccessRoute('requests')): ?>
             <a href="index.php?route=requests" class="nav-link <?= in_array($currentRoute, ['requests', 'new_request', 'view_request']) ? 'active' : '' ?>">
                 <span class="nav-icon">📝</span>
-                <span>Requests & Indent</span>
+                <span>Requests & Indents</span>
+            </a>
+        <?php endif; ?>
+
+        <?php if ($canApprSheet): ?>
+            <a href="index.php?route=approval_sheet" class="nav-link <?= $currentRoute === 'approval_sheet' ? 'active' : '' ?>">
+                <span class="nav-icon">📑</span>
+                <span>Approval Sheets</span>
             </a>
         <?php endif; ?>
 
         <?php if (Auth::canAccessRoute('distribution')): ?>
             <a href="index.php?route=distribution" class="nav-link <?= in_array($currentRoute, ['distribution', 'issue_stock', 'view_voucher']) ? 'active' : '' ?>">
                 <span class="nav-icon">🚚</span>
-                <span>Distribution & Vouchers</span>
+                <span>Issue & Vouchers</span>
             </a>
         <?php endif; ?>
 
         <?php if (Auth::canAccessRoute('movement')): ?>
             <a href="index.php?route=movement" class="nav-link <?= $currentRoute === 'movement' ? 'active' : '' ?>">
                 <span class="nav-icon">🔄</span>
-                <span>Stock Movement</span>
+                <span>Stock Transfers</span>
             </a>
         <?php endif; ?>
 
@@ -86,13 +99,27 @@ $showAdminSection = $canMasters || $canUsers || $canAudit;
             </a>
         <?php endif; ?>
 
-        <?php if ($showProcurementSection): ?>
+        <?php if ($canMaintenance): ?>
+            <a href="index.php?route=maintenance" class="nav-link <?= $currentRoute === 'maintenance' ? 'active' : '' ?>">
+                <span class="nav-icon">🔧</span>
+                <span>Maintenance & Repairs</span>
+            </a>
+        <?php endif; ?>
+
+        <?php if ($showGovernance): ?>
             <div class="nav-label">Procurement & Governance</div>
 
             <?php if ($canProcure): ?>
                 <a href="index.php?route=procurement" class="nav-link <?= $currentRoute === 'procurement' ? 'active' : '' ?>">
                     <span class="nav-icon">🛒</span>
                     <span>Procurement & GRN</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if ($canBudget): ?>
+                <a href="index.php?route=budget" class="nav-link <?= $currentRoute === 'budget' ? 'active' : '' ?>">
+                    <span class="nav-icon">💰</span>
+                    <span>Department Budgets</span>
                 </a>
             <?php endif; ?>
 
@@ -106,20 +133,13 @@ $showAdminSection = $canMasters || $canUsers || $canAudit;
             <?php if ($canReport): ?>
                 <a href="index.php?route=reports" class="nav-link <?= $currentRoute === 'reports' ? 'active' : '' ?>">
                     <span class="nav-icon">📈</span>
-                    <span>Reports & Analytics</span>
+                    <span>Reports & NAAC/NBA</span>
                 </a>
             <?php endif; ?>
         <?php endif; ?>
 
         <?php if ($showAdminSection): ?>
             <div class="nav-label">System Administration</div>
-
-            <?php if ($canMasters): ?>
-                <a href="index.php?route=admin_masters" class="nav-link <?= $currentRoute === 'admin_masters' ? 'active' : '' ?>">
-                    <span class="nav-icon">🏛️</span>
-                    <span>Master Data</span>
-                </a>
-            <?php endif; ?>
 
             <?php if ($canUsers): ?>
                 <a href="index.php?route=admin_users" class="nav-link <?= $currentRoute === 'admin_users' ? 'active' : '' ?>">
@@ -128,10 +148,31 @@ $showAdminSection = $canMasters || $canUsers || $canAudit;
                 </a>
             <?php endif; ?>
 
+            <?php if ($canSecurity): ?>
+                <a href="index.php?route=admin_security" class="nav-link <?= $currentRoute === 'admin_security' ? 'active' : '' ?>">
+                    <span class="nav-icon">🛡️</span>
+                    <span>Security Console</span>
+                </a>
+            <?php endif; ?>
+
             <?php if ($canAudit): ?>
                 <a href="index.php?route=admin_audit" class="nav-link <?= $currentRoute === 'admin_audit' ? 'active' : '' ?>">
-                    <span class="nav-icon">🛡️</span>
-                    <span>Audit Logs</span>
+                    <span class="nav-icon">📜</span>
+                    <span>Audit Trail</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if ($canMasters): ?>
+                <a href="index.php?route=admin_masters" class="nav-link <?= $currentRoute === 'admin_masters' ? 'active' : '' ?>">
+                    <span class="nav-icon">🏛️</span>
+                    <span>Master Data</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if ($canSettings): ?>
+                <a href="index.php?route=admin_settings" class="nav-link <?= $currentRoute === 'admin_settings' ? 'active' : '' ?>">
+                    <span class="nav-icon">⚙️</span>
+                    <span>System Settings</span>
                 </a>
             <?php endif; ?>
         <?php endif; ?>
