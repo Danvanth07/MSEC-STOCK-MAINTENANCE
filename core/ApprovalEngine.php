@@ -17,70 +17,77 @@ class ApprovalEngine {
     public static function initializeWorkflow(int $requestId, float $totalValue, string $requestType = 'NEW_PURCHASE'): void {
         $pdo = Database::getInstance();
 
-        // Stage 1: Department Stock Coordinator
-        $levels = [
-            [
+        // Check if the requester is an HOD
+        $stmtReq = $pdo->prepare("
+            SELECT r.requested_by, u.role_key, u.full_name 
+            FROM stock_requests r 
+            JOIN users u ON r.requested_by = u.id 
+            WHERE r.id = ?
+        ");
+        $stmtReq->execute([$requestId]);
+        $requester = $stmtReq->fetch(PDO::FETCH_ASSOC);
+        $isHODRequester = ($requester && $requester['role_key'] === 'hod');
+
+        $levels = [];
+
+        if (!$isHODRequester) {
+            // Stage 1: Department Stock Coordinator
+            $levels[] = [
                 'level' => 1,
                 'title' => 'Department Coordinator Need & Technical Verification',
                 'role'  => 'dept_coordinator'
-            ],
-            // Stage 2: Head of Department (HOD)
-            [
+            ];
+            // Stage 2: Head of Department (HOD) Authorization
+            $levels[] = [
                 'level' => 2,
                 'title' => 'Head of Department (HOD) Authorization',
                 'role'  => 'hod'
-            ],
-            // Stage 3: Store Keeper Operational Verification Gate (MANDATORY FOR ALL)
-            [
-                'level' => 3,
-                'title' => 'Central Store Keeper Operational Gate & Approval Sheet Verification',
-                'role'  => 'store_keeper'
-            ]
-        ];
-
-        // Higher sanction tiers based on estimated monetary value
-        if ($totalValue <= 5000) {
-            // Below ₹5,000: Operational sanction at Store Keeper / HOD level
-            // Level 3 Store Keeper verification suffices for operational issue
-        } elseif ($totalValue <= 25000) {
-            // ₹5,001 - ₹25,000: Vice Principal Administrative Approval
-            $levels[] = [
-                'level' => 4,
-                'title' => 'Vice Principal Administrative Sanction',
-                'role'  => 'vice_principal'
-            ];
-        } elseif ($totalValue <= 100000) {
-            // ₹25,001 - ₹1,00,000: Vice Principal + Principal High-Value Sanction
-            $levels[] = [
-                'level' => 4,
-                'title' => 'Vice Principal Administrative Concurrence',
-                'role'  => 'vice_principal'
-            ];
-            $levels[] = [
-                'level' => 5,
-                'title' => 'Principal Institutional Sanction',
-                'role'  => 'principal'
             ];
         } else {
-            // Above ₹1,00,000: Vice Principal + Principal + Director Major Capital Sanction
+            // Raised directly by HOD: Department authorization is inherent
             $levels[] = [
-                'level' => 4,
-                'title' => 'Vice Principal Administrative Concurrence',
-                'role'  => 'vice_principal'
-            ];
-            $levels[] = [
-                'level' => 5,
-                'title' => 'Principal Institutional Sanction',
-                'role'  => 'principal'
-            ];
-            $levels[] = [
-                'level' => 6,
-                'title' => 'Director Capital Procurement Sanction',
-                'role'  => 'director'
+                'level' => 1,
+                'title' => 'Head of Department (HOD) Requisition & Authorization',
+                'role'  => 'hod'
             ];
         }
 
-        // Final fulfillment step: Central Store Keeper Issue
+        // Store Keeper Operational Verification Gate (MANDATORY FOR ALL)
+        $levels[] = [
+            'level' => count($levels) + 1,
+            'title' => 'Central Store Keeper Operational Gate & Approval Sheet Verification',
+            'role'  => 'store_keeper'
+        ];
+
+        // Sanction routing based on monetary threshold (₹20,000 Rule):
+        // Minor Products (<= ₹20,000) -> Vice Principal Administrative Sanction
+        // Major Products (> ₹20,000)  -> Principal Institutional Sanction
+        if ($totalValue <= 20000) {
+            // Minor products (<= ₹20,000): Vice Principal Administrative Sanction
+            $levels[] = [
+                'level' => count($levels) + 1,
+                'title' => 'Vice Principal Administrative Sanction (Minor ≤ ₹20,000)',
+                'role'  => 'vice_principal'
+            ];
+        } else {
+            // Major products (> ₹20,000): Principal Institutional Sanction
+            $levels[] = [
+                'level' => count($levels) + 1,
+                'title' => 'Principal Institutional Sanction (Major > ₹20,000)',
+                'role'  => 'principal'
+            ];
+
+            // If major capital sanction > ₹1,00,000, Director is also required
+            if ($totalValue > 100000) {
+                $levels[] = [
+                    'level' => count($levels) + 1,
+                    'title' => 'Director Capital Procurement Sanction (> ₹1,00,000)',
+                    'role'  => 'director'
+                ];
+            }
+        }
+
+        // Final fulfillment step: Central Store Keeper Material Fulfillment & Distribution
         $levels[] = [
             'level' => count($levels) + 1,
             'title' => 'Central Store Keeper Material Fulfillment & Distribution',
@@ -93,6 +100,20 @@ class ApprovalEngine {
         ");
         foreach ($levels as $l) {
             $stmt->execute([$requestId, $l['level'], $l['title'], $l['role']]);
+        }
+
+        // If raised by HOD directly, auto-approve the HOD stage so it advances directly to Store Keeper
+        if ($isHODRequester) {
+            $updateFirst = $pdo->prepare("
+                UPDATE request_approvals 
+                SET status = 'Approved', approver_user_id = ?, comments = 'Direct HOD requisition authorized upon submission', action_date = ?
+                WHERE request_id = ? AND level_number = 1
+            ");
+            $updateFirst->execute([$requester['requested_by'], date('Y-m-d H:i:s'), $requestId]);
+
+            // Set current level to 2 (Store Keeper) and status to STORE_REVIEW
+            $pdo->prepare("UPDATE stock_requests SET current_level = 2, status = 'STORE_REVIEW' WHERE id = ?")
+                ->execute([$requestId]);
         }
     }
 
@@ -271,6 +292,31 @@ class ApprovalEngine {
         // Advance request status to STORE_VERIFIED
         $pdo->prepare("UPDATE stock_requests SET status = 'STORE_VERIFIED', total_estimated_value = ? WHERE id = ?")
             ->execute([$totalCost, $requestId]);
+
+        // Ensure subsequent sanction stage matches the final verified cost (<= 20,000 to Vice Principal, > 20,000 to Principal)
+        $findSanction = $pdo->prepare("
+            SELECT id, approver_role FROM request_approvals 
+            WHERE request_id = ? AND approver_role IN ('vice_principal', 'principal') AND status = 'Pending'
+            LIMIT 1
+        ");
+        $findSanction->execute([$requestId]);
+        $sanctionStep = $findSanction->fetch(PDO::FETCH_ASSOC);
+
+        if ($sanctionStep) {
+            if ($totalCost <= 20000 && $sanctionStep['approver_role'] !== 'vice_principal') {
+                $pdo->prepare("
+                    UPDATE request_approvals 
+                    SET approver_role = 'vice_principal', level_title = 'Vice Principal Administrative Sanction (Minor ≤ ₹20,000)'
+                    WHERE id = ?
+                ")->execute([$sanctionStep['id']]);
+            } elseif ($totalCost > 20000 && $sanctionStep['approver_role'] !== 'principal') {
+                $pdo->prepare("
+                    UPDATE request_approvals 
+                    SET approver_role = 'principal', level_title = 'Principal Institutional Sanction (Major > ₹20,000)'
+                    WHERE id = ?
+                ")->execute([$sanctionStep['id']]);
+            }
+        }
 
         AuditLogger::log(
             'APPROVAL_SHEET_GENERATED',

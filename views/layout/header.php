@@ -17,7 +17,12 @@ $recentNotifications = Notification::getForUser($user['id'] ?? 0, $currentRole, 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#090d16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MSEC Stock">
+    <meta name="format-detection" content="telephone=no">
     <title><?= APP_NAME ?> — <?= APP_INSTITUTION_FULL ?></title>
     <link rel="stylesheet" href="css/style.css?v=<?= filemtime(dirname(__DIR__, 2) . '/public/css/style.css') ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">

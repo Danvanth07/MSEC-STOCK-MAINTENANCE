@@ -39,12 +39,11 @@ const ROLES = [
     'management_viewer'   => ['name' => 'Management Viewer',           'level' => 'Read Only']
 ];
 
-// Approval Thresholds (Section 11.1)
+// Approval Thresholds (Pipeline Rule: Minor <= 20,000 to Vice Principal; Major > 20,000 to Principal)
 const APPROVAL_THRESHOLDS = [
-    'TIER_LOW'      => 5000,       // Below 5,000: HOD + Store Keeper
-    'TIER_MID'      => 25000,      // 5,001 - 25,000: HOD + Vice Principal
-    'TIER_HIGH'     => 100000,     // 25,001 - 1,00,000: HOD + Vice Principal + Principal
-    // Above 1,00,000: HOD + Vice Principal + Principal + Director
+    'MINOR_LIMIT'   => 20000,      // Minor products (<= 20,000): Vice Principal Sanction
+    'MAJOR_LIMIT'   => 20000,      // Major products (> 20,000): Principal Sanction
+    'CAPITAL_LIMIT' => 100000,     // Capital Sanction (> 1,00,000): Principal + Director
 ];
 
 // Asset Statuses (Section 18.2)

@@ -682,9 +682,9 @@ class DatabaseSeeder {
             ('ACADEMIC_YEAR', '2026-2027', 'Academic', 'Active academic session'),
             ('FINANCIAL_YEAR', '2026-2027', 'Financial', 'Active financial year'),
             ('CURRENCY_CODE', 'INR', 'Financial', 'Indian Rupee symbol ₹'),
-            ('TIER_LOW_LIMIT', '5000', 'Workflow', 'Store Keeper / HOD operational sanction threshold'),
-            ('TIER_MID_LIMIT', '25000', 'Workflow', 'Vice Principal administrative sanction threshold'),
-            ('TIER_HIGH_LIMIT', '100000', 'Workflow', 'Principal institutional sanction threshold'),
+            ('TIER_MINOR_LIMIT', '20000', 'Workflow', 'Vice Principal administrative sanction threshold for minor products (<= ₹20,000)'),
+            ('TIER_MAJOR_LIMIT', '20000', 'Workflow', 'Principal institutional sanction threshold for major products (> ₹20,000)'),
+            ('TIER_HIGH_LIMIT', '100000', 'Workflow', 'Director capital procurement sanction threshold (> ₹1,00,000)'),
             ('MAX_FAILED_LOGINS', '5', 'Security', 'Consecutive failed logins before auto-lock'),
             ('FORGOT_PASSWORD_POLICY', 'ADMIN_ONLY', 'Security', 'Strict institutional policy: Contact System Admin for password reset')");
     }

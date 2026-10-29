@@ -1,7 +1,7 @@
 <?php
 /**
  * MSEC SMART STOCK - Principal Institutional Dashboard
- * Section 6: College-Wide Academic & Financial Sanctions (> ₹25,000),
+ * Section 6: College-Wide Academic & Financial Sanctions (Major Products > ₹20,000),
  * Store-Verified Approval Sheets Queue, and Institutional Compliance.
  */
 
@@ -61,7 +61,7 @@ $decisionHistory = $pdo->query("
     <div class="stat-card danger">
         <div class="stat-title">Awaiting Principal Sanction</div>
         <div class="stat-value"><?= sprintf("%02d", $pendingPrincipalApprovals) ?></div>
-        <div class="stat-subtext">High-value requisitions (> ₹25,000)</div>
+        <div class="stat-subtext">Major product requisitions (> ₹20,000)</div>
     </div>
     <div class="stat-card primary">
         <div class="stat-title">Store-Verified Approval Sheets</div>
@@ -84,7 +84,7 @@ $decisionHistory = $pdo->query("
     <!-- Institutional Approval Queue -->
     <div class="card">
         <div class="card-header">
-            <div class="card-title">📝 High-Value Approval Queue (> ₹25,000)</div>
+            <div class="card-title">📝 Major Product Approval Queue (> ₹20,000)</div>
             <span class="badge badge-danger"><?= count($approvalQueue) ?> Action Required</span>
         </div>
         <div class="card-body" style="padding: 0;">

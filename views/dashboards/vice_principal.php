@@ -1,7 +1,7 @@
 <?php
 /**
  * MSEC SMART STOCK - Vice Principal Administrative Dashboard
- * Section 7: Administrative Approvals (₹5,001 - ₹25,000), Inter-Department Allocations,
+ * Section 7: Administrative Approvals (Minor Products ≤ ₹20,000), Inter-Department Allocations,
  * Store-Verified Requisitions Queue, and Department Stock Health.
  */
 
@@ -66,7 +66,7 @@ $movements = $pdo->query("
     <div class="stat-card warning">
         <div class="stat-title">Administrative Approvals Pending</div>
         <div class="stat-value"><?= sprintf("%02d", $pendingVPApprovals) ?></div>
-        <div class="stat-subtext">Tier 2 mid-value indents (₹5,001 – ₹25,000)</div>
+        <div class="stat-subtext">Minor product indents (≤ ₹20,000)</div>
     </div>
     <div class="stat-card info">
         <div class="stat-title">Inter-Dept Movements in Transit</div>
@@ -89,7 +89,7 @@ $movements = $pdo->query("
     <!-- VP Administrative Sanctions Queue -->
     <div class="card">
         <div class="card-header">
-            <div class="card-title">📝 Administrative Sanction Queue (₹5,001 - ₹25,000)</div>
+            <div class="card-title">📝 Administrative Sanction Queue (Minor Products ≤ ₹20,000)</div>
             <span class="badge badge-warning"><?= count($vpQueue) ?> Pending</span>
         </div>
         <div class="card-body" style="padding: 0;">

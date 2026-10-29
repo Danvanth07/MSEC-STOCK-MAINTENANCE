@@ -165,7 +165,7 @@ $items = Inventory::getAllItems();
             </div>
 
             <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin-top: 18px; font-size: 12px; color: #475569;">
-                ℹ️ <strong>Approval Matrix Rule:</strong> Calculated value dynamically routes through Coordinator &rarr; HOD &rarr; Store Keeper (&le;₹5K) / Vice Principal (&gt;₹5K) / Principal (&gt;₹25K) / Director (&gt;₹1L).
+                ℹ️ <strong>Approval Matrix Rule:</strong> Calculated value routes through Coordinator &rarr; HOD &rarr; Store Keeper Gate &rarr; <strong>Vice Principal</strong> (Minor products &le; ₹20,000) or <strong>Principal</strong> (Major products &gt; ₹20,000). Direct HOD requisitions advance automatically past department authorization.
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">

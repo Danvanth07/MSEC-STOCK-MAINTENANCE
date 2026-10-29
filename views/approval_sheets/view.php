@@ -254,7 +254,7 @@ $approvals = StockRequest::getApprovals($reqId);
         <div class="sig-slot">
             <div class="sig-title">Vice Principal / Principal</div>
             <div class="sig-status" style="color: #b45309;">
-                <?= ($sheet['total_cost'] > 25000) ? 'Principal Sanction' : 'VP Sanction' ?>
+                <?= ($sheet['total_cost'] > 20000) ? 'Principal Sanction (Major > ₹20,000)' : 'VP Sanction (Minor ≤ ₹20,000)' ?>
             </div>
             <div style="font-size: 10px; color: #64748b;">Final Institutional Sanction</div>
         </div>
